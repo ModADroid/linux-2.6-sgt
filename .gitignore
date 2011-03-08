@@ -82,6 +82,7 @@ GTAGS
 update/*.zip
 update/*.tar
 update/kernel_update/zImage
+*.tar
 *.zip
 arch/arm/boot/compressed/vmlinux
 include/asm
