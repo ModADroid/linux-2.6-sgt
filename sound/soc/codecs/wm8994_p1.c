@@ -21,6 +21,7 @@
 #include <mach/gpio-p1.h> 
 #include "wm8994.h"
 #include "wm8994_def.h"
+#include "wm8994_voodoo.h"
 
 #include <plat/s5pc11x-dvfs.h>	// for CPU Clock boost.
 
@@ -1230,6 +1231,9 @@ void wm8994_record_main_mic(struct snd_soc_codec *codec)
 			val |= (WM8994_AIF1ADC1_VU | TUNING_RECORD_MAIN_AIF1ADCR_VOL); // 0db
 		wm8994_write(codec, WM8994_AIF1_ADC1_RIGHT_VOLUME, val);
 	}
+#ifdef CONFIG_SND_VOODOO_RECORD_PRESETS
+	voodoo_hook_record_main_mic();
+#endif
 
     val = wm8994_read(codec,WM8994_POWER_MANAGEMENT_4 );
     val &= ~(WM8994_ADCL_ENA_MASK |WM8994_AIF1ADC1L_ENA_MASK  );
@@ -1736,6 +1740,10 @@ void wm8994_set_playback_speaker(struct snd_soc_codec *codec)
 	val &= ~( WM8994_SPKLVOL_ENA_MASK | WM8994_SPKRVOL_ENA_MASK  );
 	val |= ( WM8994_SPKLVOL_ENA | WM8994_SPKRVOL_ENA );
 	wm8994_write(codec, WM8994_POWER_MANAGEMENT_3, val);
+
+#ifdef CONFIG_SND_VOODOO
+	voodoo_hook_playback_headset();
+#endif
 
 	// Speaker Volume Control
 	// Unmute the SPKMIXVOLUME
@@ -4651,6 +4659,9 @@ void wm8994_set_fmradio_common(struct snd_soc_codec *codec, int onoff)
 			wm8994_write(codec, WM8994_INPUT_MIXER_4, val);	
 		}
 	}		
+#ifdef CONFIG_SND_VOODOO_FM
+	voodoo_hook_fmradio_headset();
+#endif
 }
 
 void wm8994_set_fmradio_headset(struct snd_soc_codec *codec)
@@ -4902,6 +4913,10 @@ void wm8994_set_fmradio_headset(struct snd_soc_codec *codec)
 
 	//DAC1 Unmute
 	wm8994_write(codec, WM8994_AIF1_DAC1_FILTERS_1, 0x0000);
+
+#ifdef CONFIG_SND_VOODOO_FM
+	voodoo_hook_fmradio_headset();
+#endif
 
 	val = wm8994_read(codec, WM8994_AIF2_DAC_FILTERS_1);	//520 : 0
 	val &= ~(WM8994_AIF2DAC_MUTE_MASK);
@@ -5159,6 +5174,10 @@ void wm8994_set_fmradio_headset_mix(struct snd_soc_codec *codec)
 		val |= (TUNING_DAC1L_VOL); 
 		wm8994_write(codec,WM8994_DAC1_LEFT_VOLUME ,val);
 		
+#ifdef CONFIG_SND_VOODOO_FM
+	voodoo_hook_fmradio_headset();
+#endif
+
 		//Unmute and volume ctrl RightDAC
 		val = wm8994_read(codec, WM8994_DAC1_RIGHT_VOLUME ); 
 		val &= ~(WM8994_DAC1R_MUTE_MASK | WM8994_DAC1R_VOL_MASK);
@@ -5501,6 +5520,10 @@ void wm8994_set_fmradio_speaker_headset_mix(struct snd_soc_codec *codec)
 	wm8994_write(codec,WM8994_DC_SERVO_1, val );
 
 	msleep(20);
+
+#ifdef CONFIG_SND_VOODOO_FM
+	voodoo_hook_fmradio_headset();
+#endif
 
 	//* Headphone Output
 		// Intermediate HP settings
