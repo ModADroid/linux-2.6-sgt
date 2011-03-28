@@ -1741,10 +1741,6 @@ void wm8994_set_playback_speaker(struct snd_soc_codec *codec)
 	val |= ( WM8994_SPKLVOL_ENA | WM8994_SPKRVOL_ENA );
 	wm8994_write(codec, WM8994_POWER_MANAGEMENT_3, val);
 
-#ifdef CONFIG_SND_VOODOO
-	voodoo_hook_playback_headset();
-#endif
-
 	// Speaker Volume Control
 	// Unmute the SPKMIXVOLUME
 	val = wm8994_read(codec, WM8994_SPKMIXL_ATTENUATION);
